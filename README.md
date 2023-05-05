@@ -18,3 +18,4 @@ Project to show how to work with dynamic routes and mutiple layouts in SvelteKit
 - [ ] Setup README to explain al the practices
 - [ ] Setup auto suggest (vscode problems) with svelte-check (to keep it clean just like in flutter with dart)
 - [ ] Setup vscode plugins suggestions
+- [ ] Auto monitor light house scores
