@@ -5,6 +5,7 @@ Project to show how to work with dynamic routes and mutiple layouts in SvelteKit
 ## Still a work in progress
 - [x] Dynamic routes with dynamic templates
 - [x] API stale caching for all fetches
+- [ ] Handle internal and external API calls
 - [ ] Smooth page transitions
 - [ ] Dynamic sections (with ssr rendering)
 - [ ] Optimize bundeling

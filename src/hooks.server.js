@@ -1,8 +1,10 @@
-import { STALE_FETCH_CACHE_ENABLED } from '$env/static/private';
+const STALE_FETCH_CACHE_ENABLED = import.meta.env.VITE_STALE_FETCH_CACHE_ENABLED === 'true'
+// const VITE_PAYLOAD_INTERNAL_URL = import.meta.env.VITE_PAYLOAD_INTERNAL_URL
+// const VITE_PAYLOAD_EXTERNAL_URL = import.meta.env.VITE_PAYLOAD_EXTERNAL_URL
 
 const staleFetchCacheConfig = {
     TTL: 3000, // 3 seconds
-    enabeld: STALE_FETCH_CACHE_ENABLED ?? false,
+    enabeld: STALE_FETCH_CACHE_ENABLED,
     includeRegex: [
         /\/.*/,
     ],
@@ -12,12 +14,27 @@ const staleFetchCacheConfig = {
 
 /** @type {import('@sveltejs/kit').HandleFetch} */
 export async function handleFetch({ event, request, fetch }) {
+
+    // Convert internal to external api url
+    // request = handleInternalToExternalConversion(request);
+
     // Check if request is with stale fetch cache
     const needsCache = handleCacheConditions(request.url);
     if (!needsCache) return fetch(request);
 
     return handleStaleFetchCache(event, request, fetch);
+    // return fetch(request);
 }
+
+// function handleInternalToExternalConversion(request) {
+//     if (request.url.includes(VITE_PAYLOAD_INTERNAL_URL)) {
+//         return new Request(
+//             request.url.replace(VITE_PAYLOAD_INTERNAL_URL, VITE_PAYLOAD_EXTERNAL_URL),
+//             request
+//         )
+//     }
+//     return request;
+// }
 
 function handleCacheConditions(url) {
     if (!staleFetchCacheConfig.enabeld) return false;
@@ -42,39 +59,46 @@ async function handleStaleFetchCache(event, request, fetch) {
     // If page is in cache and not stale and not inQue, return it
     let cachedPage = cache[request.url];
     if (cachedPage && cachedPage.invalidate > Date.now() && cache[request.url].content) {
-        return generateResponse(cache[request.url].content);
+        return generateResponse(
+            cache[request.url].content,
+            cache[request.url].headers
+        );
     }
 
     // if ttl expired, fetch and add to cache, or if not in cache fetch
     if (!cache[request.url] || cachedPage.invalidate < Date.now()) {
-        cache[request.url] = { 
-            url: request.url, 
+        cache[request.url] = {
+            url: request.url,
             invalidate: Date.now() + staleFetchCacheConfig.TTL,
             inQue: true,
             content: cachedPage?.content,
+            headers: cachedPage?.headers,
             fetchPromise: new Promise(async (resolve, reject) => {
-                let res = await fetch(request)
-                let content = await res.json();
+                let res = await fetch(request);
+                let content = await res.text();
                 cache[request.url].content = content
-                resolve(content)
+                cache[request.url].headers = res.headers
+                resolve([content, res.headers])
             })
         }
     }
 
     // If page exist in cache return it stale
     if (cache[request.url]?.content) {
-        return generateResponse(cache[request.url].content);
+        return generateResponse(
+            cache[request.url].content,
+            cache[request.url].headers
+        );
     }
 
     // Waiting for fetch to finish, there is no content yet
-    return generateResponse(await cache[request.url].fetchPromise);
+    const [content, headers] = await cache[request.url].fetchPromise;
+    return generateResponse(content, headers);
 }
 
-function generateResponse(content) {
-    return new Response(JSON.stringify(content), {
-        headers: {
-            'content-type': 'application/json'
-        }
+function generateResponse(content, headers) {
+    return new Response(content, {
+        headers: headers
     });
 }
 
