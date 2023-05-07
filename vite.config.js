@@ -15,42 +15,11 @@ export default defineConfig({
 		// 	}
 		// })
 	],
-	// add componten alias
 	resolve: {
 		alias: {
 			$components: '/src/components',
 			$templates: '/src/templates',
+			$lib: '/src/lib',
 		},
 	},
-	// rollupOptions: {
-	// 	manualChunks: {
-	// 		vendor: ['svelte', 'svelte/animate', 'svelte/easing', 'svelte/store', 'svelte/transition', 'svelte/internal'],
-	// 	},
-	// 	output: {
-	// 		manualChunks: {
-	// 			vendor: ['svelte', 'svelte/animate', 'svelte/easing', 'svelte/store', 'svelte/transition', 'svelte/internal'],
-	// 		}
-	// 	}
-	// },
-	// emptyOutDir: true,
-	// manifest: true,
-	// minify: true,
-	modulePreload: {
-		// include all components
-		// and templates
-		include: [
-			'/src/components/**/*',
-			'/src/templates/**/*',
-		],
-		polyfill: false,
-	},
-	rollupOptions: {
-		output: {
-				chunkFileNames: 'chunk-[name].[hash].js',
-				entryFileNames: 'entry-[name].[hash].js',
-				inlineDynamicImports: true,
-				sourcemap: true,
-			},
-	},
-	sourcemap: true,
 });

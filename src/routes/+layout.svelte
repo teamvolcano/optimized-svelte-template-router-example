@@ -3,13 +3,8 @@
     import { fly } from 'svelte/transition';
 </script>
 
-<link rel="stylesheet" href="./globals.scss" />
-
-<style lang="scss">
-    // global
-    // :global() {
-    //     @import './globals.scss';
-    // }
+<style lang="scss" global>
+    @import './globals.scss';
 
     .layout {
         display: grid;

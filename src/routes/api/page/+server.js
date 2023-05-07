@@ -2,11 +2,14 @@
 /** @type {import('./$types').RequestHandler} */
 export async function GET({ url }) {
 
+    // Wait for 2 seconds to simulate a slow API
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     const slug = url.searchParams.get('slug');
 
     let id;
     let template;
-    let customData = false;
+    let customData = {};
 
     if (slug === '/') {
         id = 1;
@@ -66,6 +69,8 @@ export async function GET({ url }) {
     if (id == null) return new Response(null, { status: 404 });
 
     const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
+
+    customData.id = Math.round(Math.random() * 100);
 
     return new Response(
         JSON.stringify({

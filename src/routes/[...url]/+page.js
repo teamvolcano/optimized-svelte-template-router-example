@@ -1,11 +1,9 @@
 import { error} from '@sveltejs/kit'
+import { fetchPage } from '$lib/pageApi';
 
 export async function load({ fetch, url }) {
-
-    // fetch from /api?slug=[this url]
     try {
-        const res = await fetch(`/api?slug=${url.pathname}`);
-        const content = await res.json();
+        const content = await fetchPage(url, fetch);
 
         let templateModule;
         if (content.template === 'home') templateModule = await import('$templates/home.svelte');
@@ -20,6 +18,9 @@ export async function load({ fetch, url }) {
             url,
         };
     } catch (err) {
+        if (import.meta.env.DEV) {
+            console.error(err);
+        }
         throw error(404, 'Pagina niet gevonden')
     }
 }

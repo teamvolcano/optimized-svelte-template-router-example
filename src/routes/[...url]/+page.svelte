@@ -2,6 +2,8 @@
     export let data;
 </script>
 
-{#key data.url}
-    <svelte:component this={data.templateModule} content={data.content} />
+<span>API REQUEST ID: {data?.content?.customData?.id}</span>
+
+{#key data?.url}
+    <svelte:component this={data?.templateModule} content={data?.content} />
 {/key}
