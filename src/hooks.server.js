@@ -27,12 +27,27 @@ export async function handleFetch({ event, request, fetch }) {
 }
 
 // function handleInternalToExternalConversion(request) {
-//     if (request.url.includes(VITE_PAYLOAD_INTERNAL_URL)) {
+//     const intern = VITE_PAYLOAD_EXTERNAL_URL
+//     const extern = VITE_PAYLOAD_INTERNAL_URL
+
+//     if (intern === extern) return request;
+
+//     const urlIsRelative = request.url.startsWith('/');
+//     const urlIncludesExternal = request.url.includes(extern);
+
+//     if (urlIsRelative) {
 //         return new Request(
-//             request.url.replace(VITE_PAYLOAD_INTERNAL_URL, VITE_PAYLOAD_EXTERNAL_URL),
+//             request.url.replace('/', intern),
 //             request
 //         )
 //     }
+//     if (urlIncludesExternal) {
+//         return new Request(
+//             request.url.replace(extern, intern),
+//             request
+//         )
+//     }
+
 //     return request;
 // }
 
